@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="css/st.css">
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Dashboard</h2>
+        <ul>
+            <!--WORK ON THIS PART BELOW UNTIL ***-->
+            <!--I WANT IT WORKING-->
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Account</a></li>
+            <li><a href="#">Pages</a></li>
+            <!--*********************************-->
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="user-info">
+                <img src="avatar.png" alt="User Avatar">
+                <span id="Username">Welcome</span>
+                <script>
+                    let username = localStorage.getItem("rusername");
+                    document.getElementById("Username").innerHTML = username;
+                </script>
+            </div>
+            <div class="actions">
+                <!--DONT FORGET HERE ***-->
+                <!--DIRECTS TO THE FILES CREATED BEFORE-->
+                <!--WORK ON THAT ^ABOVE^-->
+                <button>🔔</button>
+                <button>⚙️</button>
+                <button>🚪</button>
+                <!--********************-->
+            </div>
+        </div>
+        <div class="content">
+            <div class="card">
+                <h3>Recent Activity</h3>
+                <p>No recent activity to display.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+</head>
+<body>
+    <div id="login" class="form-container">
+        <h2>Login</h2>
+        <div class="message" id="loginMessage"></div>
+        <form id="loginForm">
+            <label for="loginUsername">Username:</label>
+            <input type="text" id="loginUsername" name="loginUsername"><br><br>
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" name="loginPassword"><br><br>
+            <input type="submit" value="Login">
+        </form>
+        <p id="inCorrect" style="color: red;"></p>
+        <button id="changePasswordBtn">Delete Account</button>
+        <button id="back" onclick="window.location.href = 'index.html'">Back</button>
+    </div>
+
+    <script>
+        // SHA-256 hash function
+        async function hashText(text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest("SHA-256", data); // Perform SHA-256
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join(''); // Convert to hex
+            return hashHex; // Return the hash as a hex string
+        }
+
+        // Wait for the page to load before processing the URL parameters
+        document.addEventListener("DOMContentLoaded", async function() {
+            const username = localStorage.getItem("username");
+            const password = localStorage.getItem("password")
+
+            // Hash the username and password from URL
+            //const hashedUsername = await hashText(username);
+            //const hashedPassword = await hashText(password);
+
+            const form = document.getElementById("loginForm");
+
+            // Check credentials when form is submitted
+            async function check(event) {
+                event.preventDefault(); // Prevent form submission
+
+                let usernameInput = document.getElementById("loginUsername").value;
+                let passwordInput = document.getElementById("loginPassword").value;
+
+                // Hash the user input when form is submitted
+                usernameInput = await hashText(usernameInput);
+                passwordInput = await hashText(passwordInput);
+
+
+                // If credentials are not valid in URL
+                if (!username || !password) {
+                    document.getElementById("inCorrect").innerHTML = "No valid credentials provided.";
+                    return;
+                }
+
+                // Validate username and password by comparing hashed values
+                if (usernameInput === username) {
+                    if (passwordInput === password) {
+                        window.location.href = "main.html"; 
+                        alert("Login successful.");
+                    } else {
+                        //document.getElementById("inCorrect").innerHTML = "Incorrect password.";
+                        alert("password incorrect");
+                    }
+                } else {
+                    //document.getElementById("inCorrect").innerHTML = "Incorrect username.";
+                    alert("username incorrect")
+                }
+            }
+
+            // Add event listener for form submission
+            form.addEventListener("submit", check);
+
+            // Function to handle Change Password
+            function handleChangePassword() {
+                // Ensure the hashed credentials are ready before redirecting
+                let ch = prompt("sure? (y/n)","n")
+                if (ch==="y") {
+                    window.location.href = "Delete.html"
+                    alert("delete success")
+                } else {
+                    alert("cancled")
+                }
+            }
+
+            // Attach event to the Change Password button
+            const changePasswordButton = document.getElementById("changePasswordBtn");
+            changePasswordButton.addEventListener("click", handleChangePassword);
+        });
+    </script>
+</body>
+</html>
