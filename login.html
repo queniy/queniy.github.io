@@ -83,6 +83,8 @@
                 let ch = prompt("sure? (y/n)","n")
                 if (ch==="y") {
                     window.location.href = "Delete.html"
+                    localStorage.removeItem("username");
+                    localStorage.removeItem("password");
                     alert("delete success")
                 } else {
                     alert("cancled")
