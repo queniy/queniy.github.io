@@ -6,6 +6,8 @@
     <button onclick="go()" style="width: 1450px;height: 800px;font-size: 50px;background-color: white;border: none;">Sucsess. Click anywhere to continue</button>
     <script>
         function go() {
+            localStorage.removeItem("username");
+            localStorage.removeItem("password");
             window.location.href = "Create.html";
         }
     </script>
