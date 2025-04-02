@@ -82,9 +82,9 @@
                 // Ensure the hashed credentials are ready before redirecting
                 let ch = prompt("sure? (y/n)","n")
                 if (ch==="y") {
-                    window.location.href = "Delete.html"
                     localStorage.clear();
                     alert("delete success")
+                    window.location.href = "Delete.html"
                 } else {
                     alert("cancled")
                 }
