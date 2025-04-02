@@ -26,8 +26,14 @@
                 <img src="avatar.png" alt="User Avatar">
                 <span id="Username">Welcome</span>
                 <script>
-                    let username = localStorage.getItem("rusername");
-                    document.getElementById("Username").innerHTML = username;
+                    const params = new URLSearchParams(window.location.search);
+                    const value = params.get("a");
+                    if (!value) {
+                        let username = localStorage.getItem("rusername");
+                        document.getElementById("Username").innerHTML = username;
+                    } else {
+                        document.getElementById("Username").innerHTML = "anonymous";
+                    }
                 </script>
             </div>
             <div class="actions">
