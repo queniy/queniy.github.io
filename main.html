@@ -16,7 +16,7 @@
             <li><a href="#">Profile</a></li>
             <li><a href="#">Settings</a></li>
             <li><a href="#">Account</a></li>
-            <li><a href="Pages.html?a=1">My Pages</a></li>
+            <li><a href="Pages.html">My Pages</a></li>
             <!--*********************************-->
         </ul>
     </div>
@@ -26,9 +26,8 @@
                 <img src="avatar.png" alt="User Avatar">
                 <span id="Username">Welcome</span>
                 <script>
-                    const params = new URLSearchParams(window.location.search);
-                    const value = params.get("a");
-                    if (!value) {
+                    const anon = localStorage.getItem("a");
+                    if (!anon) {
                         let username = localStorage.getItem("rusername");
                         document.getElementById("Username").innerHTML = username;
                     } else {
