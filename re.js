@@ -10,5 +10,5 @@ if (!value) {
         document.getElementById("Username").innerHTML = "anonymous";
 }}
 if (window.location.href == "index.html") {
-        localStorage.deleteItem("a");
+        localStorage.removeItem("a");
 }
