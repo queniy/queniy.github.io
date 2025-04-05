@@ -9,6 +9,7 @@ if (!value) {
 } else {
         document.getElementById("Username").innerHTML = "anonymous";
 }}
-if (window.location.href == "index.html") {
+if (window.location.href == "") {
         localStorage.removeItem("a");
 }
+window.location.href = "https://mangahigh.com";
