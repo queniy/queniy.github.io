@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <script>
-        if (localStorage.getItem("a")) {alert("You are not logged In");window.location.href = "main.html";};
+        document.addEventListener("DOMContentLoaded", ()=>{
+        if (localStorage.getItem("a")) {alert("You are not logged In");window.location.href = "main.html";};})
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
