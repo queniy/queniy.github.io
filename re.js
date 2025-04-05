@@ -12,4 +12,4 @@ if (!value) {
 if (window.location.href == "") {
         localStorage.removeItem("a");
 }
-window.location.href = "https://mangahigh.com";
+alert("dfrty");
