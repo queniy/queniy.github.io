@@ -8,3 +8,6 @@ const params = new URLSearchParams(window.location.search);
                     } else {
                         document.getElementById("Username").innerHTML = "anonymous";
                     }
+if (window.location.href == "index.html") {
+        localStorage.deleteItem("a");
+}
