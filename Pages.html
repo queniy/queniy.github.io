@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
-    <script src="re.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
@@ -26,16 +25,6 @@
             <div class="user-info">
                 <img src="avatar.png" alt="User Avatar">
                 <span id="Username">Welcome</span>
-                <script>
-                    const params = new URLSearchParams(window.location.search);
-                    const value = params.get("a");
-                    if (!value) {
-                        let username = localStorage.getItem("rusername");
-                        document.getElementById("Username").innerHTML = username;
-                    } else {
-                        document.getElementById("Username").innerHTML = "anonymous";
-                    }
-                </script>
             </div>
             <div class="actions">
                 <!--DONT FORGET HERE ***-->
@@ -54,5 +43,6 @@
             </div>
         </div>
     </div>
+    <script src="re.js"></script>
 </body>
 </html>
