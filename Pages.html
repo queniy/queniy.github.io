@@ -26,7 +26,15 @@
             <div class="user-info">
                 <img src="avatar.png" alt="User Avatar">
                 <span id="Username">Welcome</span>
-                <script></script>
+                <script>
+                    const value = localStorage.getItem("a");
+                    if (!value) {
+                        let username = localStorage.getItem("rusername");
+                         document.getElementById("Username").innerHTML = username;
+                    } else {
+                        document.getElementById("Username").innerHTML = "anonymous";
+                    }}
+                </script>
             </div>
             <div class="actions">
                 <!--DONT FORGET HERE ***-->
