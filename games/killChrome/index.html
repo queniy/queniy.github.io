@@ -2,7 +2,7 @@
 <html>
   <button style="width:1200px;height:700px;font-size:30px;" id="b">Click to kill Your Chrome!</button>
   <script>
-    document.getElementById("b").addEventListner("click",()=>{
+    document.getElementById("b").addEventListener("click",()=>{
       let a=confirm("are u serious?")
       if (a){for(;;){location.reload()}}
     })
