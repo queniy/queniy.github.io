@@ -112,43 +112,10 @@
             </div>
             <div>
                 <button type="submit" class="search-button">Search</button>
-                <button type="button" class="search-button" onclick="showAdvanced()">Advanced</button>
             </div>
         </form>
-        
-        <div id="advanced-search" class="advanced-search" style="display: none;">
-            <h3>Advanced</h3>
-            <form action="https://www.example.com/advanced-search" method="GET">
-                <div class="form-group">
-                    <label for="all-words">includes all the words:：</label>
-                    <input type="text" id="all-words" name="as_q">
-                </div>
-                <div class="form-group">
-                    <label for="exact-phrase">include complete phrase：</label>
-                    <input type="text" id="exact-phrase" name="as_epq">
-                </div>
-                <div class="form-group">
-                    <label for="any-words">include any words：</label>
-                    <input type="text" id="any-words" name="as_oq">
-                </div>
-                <div class="form-group">
-                    <label for="exclude-words">doesn't include：</label>
-                    <input type="text" id="exclude-words" name="as_eq">
-                </div>
-                <button type="submit" class="advanced-button">Advanced search</button>
-            </form>
-        </div>
+            
     </div>
 
-    <script>
-        function showAdvanced() {
-            const advancedSearch = document.getElementById('advanced-search');
-            if (advancedSearch.style.display === 'none') {
-                advancedSearch.style.display = 'block';
-            } else {
-                advancedSearch.style.display = 'none';
-            }
-        }
-    </script>
 </body>
 </html>
