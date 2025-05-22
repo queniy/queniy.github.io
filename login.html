@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+</head>
+<body>
+    <div id="login" class="form-container">
+        <h2>Login</h2>
+        <div class="message" id="loginMessage"></div>
+        <form id="loginForm">
+            <label for="loginUsername">Username:</label>
+            <input type="text" id="loginUsername" name="loginUsername"><br><br>
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" name="loginPassword"><br><br>
+            <input type="submit" value="Login">
+        </form>
+        <p id="inCorrect" style="color: red;"></p>
+        <button id="back" onclick="window.location.href = 'index.html'">Back</button>
+    </div>
+
+    <script>
+        async function hashText(text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        }
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            const form = document.getElementById("loginForm");
+
+            async function check(event) {
+                event.preventDefault();
+
+                let usernameInput = document.getElementById("loginUsername").value;
+                let passwordInput = document.getElementById("loginPassword").value;
+
+                const hashedUsernameInput = await hashText(usernameInput);
+                const hashedPasswordInput = await hashText(passwordInput);
+
+                const accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+
+                const matchedAccount = accounts.find(acc => 
+                    acc.hashedUsername === hashedUsernameInput && 
+                    acc.hashedPassword === hashedPasswordInput
+                );
+
+                if (matchedAccount) {
+                    localStorage.setItem("currentUser", matchedAccount.rusername);
+                    localStorage.setItem("loggedIn", "1");
+                    window.location.href = "index.html"; 
+                } else {
+                    alert("Username or password incorrect");
+                }
+            }
+
+            form.addEventListener("submit", check);
+        });
+    </script>
+</body>
+</html>

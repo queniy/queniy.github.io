@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="css/st.css">
+    <style>
+        #deleteAccountBtn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        #deleteAccountBtn:hover {
+            background-color: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        loggedin = localStorage.getItem("loggedIn");
+        if (!loggedin) {
+            alert("Not logged in");
+            window.location.href = "login.html";
+        }
+    </script>
+    <div class="sidebar"> 
+        <h2>Dashboard</h2>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#" style="color:gray;pointer-events: none;">Settings</a></li>
+            <li><a href="#" style="color:gray;pointer-events: none;">My Pages</a></li>
+            <li><a href="index.html"><b>Back</b></a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="top-bar">
+            <div class="user-info">
+                <img src="avatar.png" alt="User Avatar">
+                <span id="Username">Welcome, <span id="currentUserDisplay"></span></span>
+            </div>
+            <div class="actions">
+                <button>🔔</button>
+                <button>⚙️</button>
+                <button id="logoutBtn">🚪</button>
+                <button id="deleteAccountBtn">Delete Account</button>
+            </div>
+        </div>
+        <div class="content">
+            <div class="card">
+                <h3>Recent Activity</h3>
+                <p>No recent activity to display.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Display current username
+        document.getElementById("currentUserDisplay").textContent = localStorage.getItem("currentUser");
+
+        // Logout function
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.setItem('loggedIn', '0');
+            window.location.href = 'index.html';
+        });
+
+        // Delete account function
+        document.getElementById('deleteAccountBtn').addEventListener('click', function() {
+            if (localStorage.getItem('loggedIn') !== '1') {
+                alert('You must be logged in to delete an account');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            let confirmation = prompt('WARNING: This will permanently delete your account and all data.\nType "DELETE MY ACCOUNT" to confirm', '');
+            
+            if (confirmation === 'DELETE MY ACCOUNT') {
+                const currentUser = localStorage.getItem('currentUser');
+                let accounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                
+                accounts = accounts.filter(acc => acc.rusername !== currentUser);
+                
+                localStorage.setItem('accounts', JSON.stringify(accounts));
+                localStorage.removeItem('currentUser');
+                localStorage.setItem('loggedIn', '0');
+                
+                alert('Account deleted successfully');
+                window.location.href = 'Delete.html';
+            } else {
+                alert('Account deletion cancelled');
+            }
+        });
+    </script>
+</body>
+</html>

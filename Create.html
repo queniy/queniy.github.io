@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Account</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="createAccount" class="form-container">
+        <h2>Create Account</h2>
+        <div class="message" id="createAccountMessage"></div>
+            <form id="createAccountForm">
+                <label for="username">Username:</label>
+                <input type="text" id="username"><br><br>
+                <label for="password">Password:</label>
+                <input type="password" id="password"><br><br>
+                <label for="confirmPassword">Confirm Password:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword"><br><br>
+                <input type="submit" value="Create Account">
+            </form>
+            <button id="back" onclick="window.location.href = 'index.html'">Back</button>
+        <p id="message" style="color:red"></p>
+    </div>
+
+    <script>
+        async function hashText(text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        };
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("createAccountForm");
+            form.addEventListener("submit", async function(event) {
+                event.preventDefault();
+
+                let username = document.getElementById("username").value.trim();
+                let password = document.getElementById("password").value.trim();
+                let confirmPassword = document.getElementById("confirmPassword").value.trim();
+                let messageElement = document.getElementById("createAccountMessage");
+
+                messageElement.innerHTML = "";
+
+                if (username === "") {messageElement.innerHTML = "Username cannot be empty";return;}
+                if (password === "") {messageElement.innerHTML = "Password cannot be empty";return;}
+                if (password !== confirmPassword) {messageElement.innerHTML = "Passwords do not match";return;}
+
+                const hashedUsername = await hashText(username);
+                const hashedPassword = await hashText(password);
+
+                const accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+                
+                const usernameExists = accounts.some(acc => acc.hashedUsername === hashedUsername);
+                if (usernameExists) {
+                    messageElement.innerHTML = "Username already exists";
+                    return;
+                }
+
+                accounts.push({
+                    rusername: username,
+                    hashedUsername: hashedUsername,
+                    hashedPassword: hashedPassword
+                });
+
+                localStorage.setItem("accounts", JSON.stringify(accounts));
+                localStorage.setItem("currentUser", username);
+                localStorage.setItem("loggedIn", "1");
+                
+                alert("Account created successfully!");
+                window.location.href = "index.html";
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* The Modal (background) */
+        .modal {
+          display: none;
+          position: fixed;
+          z-index: 100;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          overflow: auto;
+          background-color: rgba(0,0,0,0.7);
+        }
+        
+        /* Modal Content/Box */
+        .modal-content {
+          background-color: #fefefe;
+          margin: auto;
+          padding: 20px;
+          border: 1px solid #888;
+          width: 80%;
+          max-width: 800px;
+          border-radius: 10px;
+          position: relative;
+        }
+        
+        /* Close Button */
+        .close {
+          color: #aaa;
+          position: absolute;
+          right: 15px;
+          top: 5px;
+          font-size: 28px;
+          font-weight: bold;
+        }
+        
+        .close:hover {
+          color: black;
+          cursor: pointer;
+        }
+    </style>
+    <title>Escape Għar Dalam</title>
+</head>
+<body>
+    <h1 style="color:white">Escape Għar Dalam</h1>
+    
+    <div class="player-info" id="playerInfo"></div>
+    
+    <div class="board" id="board"></div>
+    
+    <div class="controls">
+        <button id="rollDice">Roll the Dice</button>
+        <button id="newGame">New Game</button>
+    </div>
+    
+    <div class="dice" id="diceResult"></div>
+    
+    <div class="winner" id="winner"></div>
+    
+    <div id="win" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="a">This is a modal pop-up!</div>
+        </div>
+    </div>
+    
+    <script src="qlist.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const argValue = urlParams.get('f');
+        if(argValue=="1"){document.documentElement.requestFullscreen()}
+    </script>
+    <script>
+        // Game variables
+        let players = [];
+        let currentPlayerIndex = 0;
+        let gameActive = false;
+        let isMoving = false;
+        const totalCells = 45;
+        const colors = ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6']; // Red, Blue, Green, Purple
+        const moveSpeed = 200; // milliseconds per cell
+        
+        // DOM elements
+        const boardElement = document.getElementById('board');
+        const rollDiceButton = document.getElementById('rollDice');
+        const newGameButton = document.getElementById('newGame');
+        const diceResultElement = document.getElementById('diceResult');
+        const winnerElement = document.getElementById('winner');
+        const playerInfoElement = document.getElementById('playerInfo');
+        const modal = document.getElementById('win');
+        const closeBtn = document.querySelector('.close');
+        
+        // Create the board
+        function initializeBoard() {
+            boardElement.innerHTML = '';
+            
+            for (let row = 0; row < 3; row++) {
+                for (let col = 0; col < 15; col++) {
+                    const cellNumber = row % 2 === 0 
+                        ? row * 15 + col + 1 
+                        : (row + 1) * 15 - col;
+                    
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.number = cellNumber;
+                    
+                    // Mark special cells
+                    if (cellNumber > 40 && cellNumber <= 45) {
+                        cell.classList.add('special-cell');
+                        const specialMarker = document.createElement('div');
+                        specialMarker.className = 'special-marker';
+                        specialMarker.textContent = '★';
+                        cell.appendChild(specialMarker);
+                    }
+                    
+                    const cellNumberLabel = document.createElement('div');
+                    cellNumberLabel.className = 'cell-number';
+                    cellNumberLabel.textContent = cellNumber;
+                    
+                    cell.appendChild(cellNumberLabel);
+                    boardElement.appendChild(cell);
+                }
+            }
+        }
+        
+        // Create players
+        function initializePlayers(numPlayers) {
+            players = [];
+            
+            for (let i = 0; i < numPlayers; i++) {
+                const playerElement = document.createElement('div');
+                playerElement.className = 'player';
+                playerElement.style.backgroundColor = colors[i];
+                
+                // Create number element inside player
+                const numberElement = document.createElement('div');
+                numberElement.className = 'player-number';
+                numberElement.textContent = i + 1;
+                playerElement.appendChild(numberElement);
+                
+                playerElement.style.position = 'absolute';
+                playerElement.style.transition = `left ${moveSpeed}ms ease-in-out, top ${moveSpeed}ms ease-in-out`;
+                
+                players.push({
+                    position: 0,
+                    color: colors[i],
+                    name: `Player ${i + 1}`,
+                    element: playerElement,
+                    statusElement: document.createElement('div')
+                });
+                
+                document.body.appendChild(playerElement);
+            }
+            
+            updatePlayerInfo();
+            updatePlayerPositions();
+        }
+        
+        // Update player info display
+        function updatePlayerInfo() {
+            playerInfoElement.innerHTML = '';
+            
+            players.forEach((player, index) => {
+                const playerStatus = document.createElement('div');
+                playerStatus.className = `player-status ${index === currentPlayerIndex ? 'current-player' : ''}`;
+                playerStatus.style.backgroundColor = player.color;
+                playerStatus.innerHTML = `
+                    <strong>${player.name}</strong><br>
+                    Position: ${player.position}/${totalCells}
+                `;
+                playerInfoElement.appendChild(playerStatus);
+            });
+        }
+        
+        // Get cell position on screen
+        function getCellPosition(cellNumber) {
+            const cell = document.querySelector(`.cell[data-number="${cellNumber}"]`);
+            if (!cell) return { left: 0, top: 0 };
+            
+            const rect = cell.getBoundingClientRect();
+            return {
+                left: rect.left + window.scrollX + (rect.width - 40) / 2,
+                top: rect.top + window.scrollY + (rect.height - 40) / 2
+            };
+        }
+        
+        // Update player positions with animation
+        function updatePlayerPositions() {
+            players.forEach((player, playerIndex) => {
+                if (player.position > 0 && player.position <= totalCells) {
+                    const pos = getCellPosition(player.position);
+                    player.element.style.left = `${pos.left}px`;
+                    player.element.style.top = `${pos.top}px`;
+                    player.element.style.display = 'flex'; // Use flex for centering
+                } else if (player.position === 0) {
+                    // Hide players at start position
+                    player.element.style.display = 'none';
+                }
+            });
+        }
+        
+        function showQuestionModal() {
+            const question = ql[players[currentPlayerIndex].position - 1];
+            const iframeSrc = `q.html?q=${encodeURIComponent(question.q)}&a=${encodeURIComponent(question.a)}&b=${encodeURIComponent(question.b)}&c=${encodeURIComponent(question.c)}&d=${encodeURIComponent(question.d)}&correct=${encodeURIComponent(question.correct)}`;
+            
+            document.getElementById("a").innerHTML = `<iframe style="width:100%;height:500px;border:none;" src="${iframeSrc}"></iframe>`;
+            modal.style.display = "block";
+        }
+        
+        // Handle special cell effects
+        function handleSpecialCell(player, cell) {
+            let message = "";
+            
+            switch(cell.special) {
+                case "move_forward":
+                    player.position = Math.min(player.position + cell.value, totalCells);
+                    message = `Advanced ${cell.value} spaces!`;
+                    break;
+                case "move_back":
+                    player.position = Math.max(player.position - cell.value, 0);
+                    message = `Moved back ${cell.value} spaces!`;
+                    break;
+                case "extra_turn":
+                    currentPlayerIndex = (currentPlayerIndex - 1 + players.length) % players.length;
+                    message = "Bonus turn!";
+                    break;
+                case "skip_turn":
+                    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+                    message = "Skipped next turn!";
+                    break;
+                case "teleport":
+                    player.position = cell.value;
+                    message = `Teleported to space ${cell.value}!`;
+                    break;
+            }
+            
+            diceResultElement.textContent = message;
+            updatePlayerPositions();
+            updatePlayerInfo();
+            
+            // Re-enable the roll dice button for the next player
+            rollDiceButton.disabled = false;
+            
+            // Check if the player won after the special move
+            if (player.position === totalCells) {
+                winnerElement.textContent = `${player.name} won!`;
+                winnerElement.style.display = 'block';
+                gameActive = false;
+            }
+        }
+                
+        // Check if player landed on a question or special cell
+        function checkCell() {
+            const currentPlayer = players[currentPlayerIndex];
+            const cell = ql[currentPlayer.position - 1];
+            
+            if (cell.special) {
+                handleSpecialCell(currentPlayer, cell);
+            } else {
+                showQuestionModal();
+            }
+        }
+        
+        // Message listener for question results
+        window.addEventListener('message', function(event) {
+            console.log("Message received:", event); // Check if this logs at all
+            if (event.data.action === 'close') {
+                modal.style.display = "none";
+                rollDiceButton.disabled = false; // Add this line to re-enable the button
+                
+                // Only process answer results if we have answer data
+                if (event.data.isCorrect !== undefined) {
+                    // Handle answer result
+                    if (event.data.isCorrect) {
+                        players[currentPlayerIndex].position = Math.min(
+                            players[currentPlayerIndex].position + 2, 
+                            totalCells
+                        );
+                        diceResultElement.textContent = "Correct! +2 spaces";
+                    } else {
+                        players[currentPlayerIndex].position = Math.max(
+                            players[currentPlayerIndex].position - 1, 
+                            0
+                        );
+                        diceResultElement.textContent = "Wrong! -1 space";
+                    }
+                    
+                    updatePlayerPositions();
+                    
+                    // Check if player won after answering
+                    if (players[currentPlayerIndex].position === totalCells) {
+                        winnerElement.textContent = `${players[currentPlayerIndex].name} won!`;
+                        winnerElement.style.display = 'block';
+                        gameActive = false;
+                        return;
+                    }
+                    
+                    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+                    updatePlayerInfo();
+                }
+            }
+        });
+        
+        // Move player smoothly through each cell
+        async function movePlayer(player, steps) {
+            isMoving = true;
+            rollDiceButton.disabled = true;
+            
+            const targetPosition = Math.min(player.position + steps, totalCells);
+            const startPosition = player.position;
+            
+            for (let i = 1; i <= steps && startPosition + i <= totalCells; i++) {
+                player.position = startPosition + i;
+                updatePlayerPositions();
+                
+                // Wait for the animation to complete before moving to next cell
+                await new Promise(resolve => setTimeout(resolve, moveSpeed));
+            }
+            
+            isMoving = false;
+            
+            // Check if someone won
+            if (player.position === totalCells) {
+                winnerElement.textContent = `${player.name} won!`;
+                winnerElement.style.display = 'block';
+                gameActive = false;
+                return true;
+            }
+            
+            // Check if landed on special cell or question
+            checkCell();
+            return false;
+        }
+        
+        // Roll dice handler
+        async function rollDice() {
+            if (!gameActive || isMoving) return;
+            
+            const diceValue = Math.floor(Math.random() * 3) + 1;
+            diceResultElement.textContent = `Rolled: ${diceValue}`;
+            
+            const currentPlayer = players[currentPlayerIndex];
+            const hasWon = await movePlayer(currentPlayer, diceValue);
+            
+            if (!hasWon) {
+                // Switch to next player if not answering question
+                if (!modal.style.display || modal.style.display === "none") {
+                    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+                    updatePlayerInfo();
+                }
+            }
+        }
+        
+        // Start new game
+        function startNewGame() {
+            const numPlayers = parseInt(prompt("How many players? (1-4):", "2"));
+            
+            if (isNaN(numPlayers) || numPlayers < 1 || numPlayers > 4) {
+                alert("Number of players must be between 1 and 4");
+                return;
+            }
+            
+            // Remove old player elements
+            players.forEach(player => {
+                if (player.element && player.element.parentNode) {
+                    player.element.parentNode.removeChild(player.element);
+                }
+            });
+            
+            initializeBoard();
+            initializePlayers(numPlayers);
+            
+            currentPlayerIndex = 0;
+            gameActive = true;
+            winnerElement.style.display = 'none';
+            diceResultElement.textContent = '';
+            rollDiceButton.disabled = false;
+            
+            updatePlayerInfo();
+        }
+        
+        // Event listeners
+        rollDiceButton.addEventListener('click', rollDice);
+        newGameButton.addEventListener('click', startNewGame);
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = "none";
+        });
+        
+        // Initialize
+        initializeBoard();
+        startNewGame();
+    </script>
+</body>
+</html>

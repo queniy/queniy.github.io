@@ -1,0 +1,189 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f0f0f0;
+  padding: 20px;
+  background-image: url('image.png');
+  background-size:1500px ;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(15, 60px);
+  grid-template-rows: repeat(3, 60px);
+  gap: 5px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.cell {
+  width: 60px;
+  height: 60px;
+  background-color: #fff;
+  border: 2px solid #333;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  position: relative;
+}
+
+.cell-number {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 10px;
+  color: #666;
+}
+
+.player {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.player-number {
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+  line-height: 1;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0 10px;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+.dice {
+  font-size: 24px;
+  margin: 10px 0;
+  color:white;
+}
+
+.player-info {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+.player-status {
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  min-width: 120px;
+}
+
+.current-player {
+  background-color: #ffeb3b;
+  font-weight: bold;
+}
+
+.winner {
+  font-size: 24px;
+  color: #e91e63;
+  font-weight: bold;
+  margin-top: 20px;
+  display: none;
+}
+/* Add to existing styles */
+.cell.special {
+  background-color: #ffe0b2;
+  border: 2px dashed #ff9800;
+}
+
+.player {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Modal improvements */
+.modal-content {
+  max-width: 800px;
+  margin: 50px auto;
+  border-radius: 10px;
+}
+
+/* Question options styling */
+.option.correct {
+  background-color: #a5d6a7;
+}
+
+.option.incorrect {
+  background-color: #ef9a9a;
+}
+/* Add these to your existing styles */
+.special-cell {
+  background-color: #fff3e0;
+  border: 2px dashed #ffa000 !important;
+}
+
+.special-marker {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  color: #ffa000;
+  font-size: 20px;
+}
+
+/* Update the modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  padding-top: 50px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 800px;
+  border-radius: 10px;
+  position: relative;
+}
+
+.close {
+  position: absolute;
+  right: 15px;
+  top: 5px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
