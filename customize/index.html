@@ -9,7 +9,7 @@
       const urlParams = new URLSearchParams(queryString);
       const string = urlParams.get("text");
       const a=document.getElementById("1");
-      document.getElementById("1").innerHTML = string ?? a;
+      string ? document.getElementById("1").innerHTML = string : (()=>{})();
     </script>
   </body>
 </html>
